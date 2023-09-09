@@ -24,9 +24,12 @@ class ArticleStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|max:255',
-            'category_id' => 'required',
-            'slug' => 'required|unique:articles,slug',
+            'name' => 'sometimes|required|max:255',
+            'category_id' => 'sometimes|required',
+            'active' => 'sometimes|required',
+            'order' => 'sometimes|required',
+            'slug' => 'sometimes|unique:articles,slug',
+            "updated_at" => 'sometimes|required',
         ];
     }
 }
