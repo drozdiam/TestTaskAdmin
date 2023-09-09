@@ -20,7 +20,7 @@ class ArticleFactory extends Factory
             'name' => 'Article ' . $i,
             'slug' => Str::slug("Article $i",'-' ),
             'category_id' => Category::get()->random()->id,
-            'image' => $this->faker->image('public/images',640, 480),
+            'image' => 'storage/images/' . $this->faker->image('public/storage/images', 400, 300, null, false),
             'text' => $this->faker->text(20),
             'order' => $i++,
             'active' => true
