@@ -15,7 +15,7 @@ class ArticleController extends Controller
      */
     public function index()
     {
-        return ArticleResource::collection(Article::paginate(10));
+        return ArticleResource::collection(Article::orderBy('order')->paginate(10));
     }
 
     /**
@@ -32,6 +32,7 @@ class ArticleController extends Controller
      */
     public function show( $article)
     {
+
         return new ArticleResource(Article::where('id', $article)->orWhere( 'slug' , $article)->firstOrFail());
     }
 
