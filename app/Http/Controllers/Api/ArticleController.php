@@ -7,6 +7,7 @@ use App\Http\Requests\ArticleStoreRequest;
 use App\Http\Resources\ArticleResource;
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ArticleController extends Controller
 {
@@ -23,7 +24,21 @@ class ArticleController extends Controller
      */
     public function store(ArticleStoreRequest $request)
     {
-        $createArticle = Article::create($request->validated());
+        $validatedData = $request->validated();
+
+        // Создание статьи
+        $createArticle = Article::create($validatedData);
+
+        // Проверка и сохранение изображения, если оно было загружено
+        if ($request->hasFile('image')) {
+            $uploadFile = $request->file('image');
+            $file_name = $uploadFile->hashName();
+            $uploadFile->storeAs('images', $file_name);
+
+            // Обновление пути изображения в созданной статье
+            $createArticle->update(['image' => 'storage/images/' . $file_name]);
+        }
+
         return new ArticleResource($createArticle);
     }
 
@@ -42,6 +57,14 @@ class ArticleController extends Controller
     public function update(ArticleStoreRequest $request, Article $article)
     {
         $article->update($request->validated());
+
+        if ($request->hasFile('image')) {
+            $uploadFile = $request->file('image');
+            $file_name = $uploadFile->hashName();
+            $uploadFile->storeAs('images', $file_name);
+            $article->find($article->id)->update(['image' => 'storage/images/' . $file_name]);
+        }
+
         return new ArticleResource($article);
     }
 
