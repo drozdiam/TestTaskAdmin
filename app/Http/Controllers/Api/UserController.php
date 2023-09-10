@@ -7,6 +7,7 @@ use App\Http\Requests\UserStoreRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -23,7 +24,12 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-        $createUser = User::create($request->validated());
+        $validatedData = $request->validated();
+
+        $validatedData['password'] = Hash::make($validatedData['password']);
+
+        $createUser = User::create($validatedData);
+
         return new UserResource($createUser);
     }
 
@@ -32,24 +38,31 @@ class UserController extends Controller
      */
     public function show( $user)
     {
-        return new UserResource(User::find($user->id));
+        return new UserResource(User::find($user));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user)
+    public function update(UserStoreRequest $request, User $user)
     {
-        $user->update($request->validated());
+        $validatedData = $request->validated();
+
+        if (isset($validatedData['password'])) {
+            $validatedData['password'] = Hash::make($validatedData['password']);
+        }
+
+        $user->update($validatedData);
+
         return new UserResource($user);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $category)
+    public function destroy(User $user)
     {
-        $category->delete();
+        $user->delete();
         return response()->noContent();
     }
 }
