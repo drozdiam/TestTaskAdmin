@@ -26,9 +26,11 @@ class ArticleStoreRequest extends FormRequest
         return [
             'name' => 'sometimes|required|max:255',
             'category_id' => 'sometimes|required',
+            'image' => 'sometimes|required',
             'active' => 'sometimes|required',
+            'text' => 'sometimes|required',
             'order' => 'sometimes|required',
-            'slug' => 'sometimes|unique:articles,slug',
+            'slug' => 'sometimes',
             "updated_at" => 'sometimes|required',
         ];
     }
