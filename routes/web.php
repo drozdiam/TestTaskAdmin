@@ -6,6 +6,9 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 
 
+Route::get('/', function () {
+    return redirect()->route('categories');
+});
 
 Route::middleware(['auth', 'checkActiveStatus'])->prefix('admin_panel')->group(function () {
     Route::get('/', function () {
