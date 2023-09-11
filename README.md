@@ -3,7 +3,7 @@
 
 # Установка проекта
 
-Клонируем ропозирорий:
+Клонируем репозиторий:
 
 `git clone https://github.com/drozdiam/TestTaskAdmin.git`
 
@@ -11,7 +11,7 @@
 
 `composer update`
 
-Переиминовываем файл .env:
+Переименовываем файл .env:
 
 `.env.example в .env`
 
@@ -24,7 +24,7 @@
 `FILESYSTEM_DRIVER=public`
 
 
-Создаем папку images в директории :
+Создаем папку images в директории:
 
 `/storage/app/public/images`
 
