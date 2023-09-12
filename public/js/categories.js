@@ -1,22 +1,22 @@
 document.addEventListener("DOMContentLoaded", function () {
     function createTableRows(data) {
-        var tbody = document.getElementById("dataTableBody");
+        let tbody = document.getElementById("dataTableBody");
 
         data.forEach(function (item) {
-            var row = document.createElement("tr");
+            let row = document.createElement("tr");
             row.setAttribute("data-id", item.id);
 
-            var idCell = document.createElement("td");
+            let idCell = document.createElement("td");
             idCell.textContent = item.id;
             row.appendChild(idCell);
 
-            var nameCell = document.createElement("td");
+            let nameCell = document.createElement("td");
             nameCell.textContent = item.name;
             nameCell.setAttribute("id", "categoryNameCell");
             row.appendChild(nameCell);
 
-            var checkboxCell = document.createElement("td");
-            var checkbox = document.createElement("input");
+            let checkboxCell = document.createElement("td");
+            let checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.checked = item.active === 1;
             checkbox.className = "js-switch";
@@ -24,8 +24,8 @@ document.addEventListener("DOMContentLoaded", function () {
             checkboxCell.appendChild(checkbox);
             row.appendChild(checkboxCell);
 
-            var actionCell = document.createElement("td");
-            var editButton = document.createElement("button");
+            let actionCell = document.createElement("td");
+            let editButton = document.createElement("button");
             editButton.textContent = "Редактировать";
             editButton.className = "btn btn-warning btn-sm";
             editButton.setAttribute("data-bs-target", "#editCategoryModal");
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             actionCell.appendChild(editButton);
 
-            var deleteButton = document.createElement("button");
+            let deleteButton = document.createElement("button");
             deleteButton.textContent = "Удалить";
             deleteButton.className = "btn btn-danger btn-sm";
             deleteButton.addEventListener("click", function () {
@@ -47,7 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             tbody.appendChild(row);
 
-            var switchery = new Switchery(checkbox, {
+            let switchery = new Switchery(checkbox, {
                 size: "small"
             });
 
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         });
 
-        var sortableTable = new Sortable(document.querySelector('#sortableTable tbody'), {
+        let sortableTable = new Sortable(document.querySelector('#sortableTable tbody'), {
             animation: 150,
             handle: 'td',
             onEnd: function (evt) {
@@ -98,7 +98,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function deleteCategory(categoryId) {
-        var confirmDelete = confirm("Вы уверены, что хотите удалить эту категорию?");
+        let confirmDelete = confirm("Вы уверены, что хотите удалить эту категорию?");
 
         if (confirmDelete) {
             const url = 'http://127.0.0.1:8000/api/categories/' + categoryId;
@@ -170,12 +170,12 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("editCategoryId").value = categoryData.id;
         document.getElementById("editCategoryName").value = categoryData.name;
 
-        var editModal = document.getElementById('editCategoryModal');
+        let editModal = document.getElementById('editCategoryModal');
         if (editModal) {
             editModal.style.display = 'block';
         }
 
-        var saveEditButton = document.getElementById('saveEditButton');
+        let saveEditButton = document.getElementById('saveEditButton');
         if (saveEditButton) {
             saveEditButton.addEventListener('click', function () {
                 const editedCategoryData = {
@@ -255,14 +255,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function refreshTable() {
-        var tbody = document.getElementById("dataTableBody");
+        let tbody = document.getElementById("dataTableBody");
         tbody.innerHTML = "";
         loadDataFromServer();
     }
 
     loadDataFromServer();
 
-    var saveAddButton = document.getElementById('saveAddButton');
+    let saveAddButton = document.getElementById('saveAddButton');
     if (saveAddButton) {
         saveAddButton.addEventListener('click', function () {
             const newCategoryData = {
