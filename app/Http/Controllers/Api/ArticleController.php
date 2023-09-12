@@ -14,9 +14,27 @@ class ArticleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return ArticleResource::collection(Article::orderBy('order')->paginate(10));
+        $query = Article::query();
+
+        if ($request->has('sort')) {
+            $sortParams = explode(',', $request->input('sort'));
+
+            foreach ($sortParams as $sortParam) {
+                list($field, $order) = explode(':', $sortParam);
+
+                if (in_array($field, ['id', 'name', 'slug', 'category_id', 'text', 'active', 'order', 'updated_at', 'created_at'])) {
+                    $query->orderBy($field, $order);
+                }
+            }
+        } else {
+            $query->orderBy('order', 'asc');
+        }
+
+        $articles = $query->paginate(10);
+
+        return ArticleResource::collection($articles);
     }
 
     /**
@@ -26,16 +44,13 @@ class ArticleController extends Controller
     {
         $validatedData = $request->validated();
 
-        // Создание статьи
         $createArticle = Article::create($validatedData);
 
-        // Проверка и сохранение изображения, если оно было загружено
         if ($request->hasFile('image')) {
             $uploadFile = $request->file('image');
             $file_name = $uploadFile->hashName();
             $uploadFile->storeAs('images', $file_name);
 
-            // Обновление пути изображения в созданной статье
             $createArticle->update(['image' => 'storage/images/' . $file_name]);
         }
 
