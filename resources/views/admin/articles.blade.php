@@ -1,22 +1,46 @@
 @extends('admin.homeAdmin')
 
 @section('content')
+    <style>
+        th[data-column]:after {
+            content: "";
+            margin-left: 5px;
+            width: 0;
+            height: 0;
+            vertical-align: middle;
+            border: 6px solid transparent;
+        }
 
+        th[data-column][data-directions*="asc"]:after {
+            border-bottom: 6px solid #000; /* Стрелочка вверх для сортировки по возрастанию */
+        }
+
+        th[data-column][data-directions*="desc"]:after {
+            border-top: 6px solid #000; /* Стрелочка вниз для сортировки по убыванию */
+
+        #sortableTable td {
+            vertical-align: top !important;
+        }
+        th {
+             text-align: center;
+        }
+
+    </style>
+    <button type="button" id="resetSortButton" class="btn btn-secondary">Сбросить сортировку</button>
     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">Добавить новую статью</button>
     <table id="sortableTable" class="table table-bordered">
         <thead class="thead-dark">
-        <tr>
-            <th>ID</th>
-            <th>Название</th>
-            <th>Категория</th>
-            <th>Текст</th>
-            <th>Слаг</th>
-            <th>Изображение</th>
-            <th>Активен</th>
-            <th>Дата создания</th>
-            <th>Дата изменения</th>
-            <th>Действия</th>
-        </tr>
+            <th data-column="id">ID</th>
+            <th data-column="name">Название</th>
+            <th data-column="category_id">Категория</th>
+            <th data-column="text">Текст</th>
+            <th data-column="slug">Слаг</th>
+            <th style="pointer-events: none;" >Изображение</th>
+            <th data-column="active">Активен</th>
+            <th data-column="created_at">Дата создания</th>
+            <th data-column="updated_at">Дата изменения</th>
+            <th style="pointer-events: none;">Действия</th>
+        </th>
         </thead>
         <tbody id="dataTableBody">
         </tbody>
@@ -130,7 +154,6 @@
 
             function createTableRows(data) {
                 let tbody = document.getElementById("dataTableBody");
-
                 data.forEach(function (item) {
                     let row = document.createElement("tr");
                     row.setAttribute("data-id", item.id);
@@ -232,8 +255,36 @@
                     }
                 });
             }
+            let currentSortOrderName = 'asc';
 
-            // Функция для отправки состояния чекбокса и name на сервер
+            function deleteArticle(articleId) {
+                if (confirm('Вы уверены, что хотите удалить эту статью?')) {
+                    const url = 'http://127.0.0.1:8000/api/articles/' + articleId;
+
+                    fetch(url, {
+                        method: 'DELETE',
+                    })
+                        .then((response) => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            if (response.status === 204) {
+                                console.log('Категория успешно удалена.');
+                                const row = document.querySelector('tr[data-id="' + articleId + '"]');
+                                if (row) {
+                                    row.remove();
+                                    updateData(currentPage);
+                                }
+                            } else {
+                                console.error('Неожиданный ответ от сервера:', response.status);
+                            }
+                        })
+                        .catch((error) => {
+                            console.error('Произошла ошибка при удалении категории:', error);
+                        });
+                }
+                }
+
             function sendToggleStatus(articleId, status, name, slug, category_id) {
                 const url = 'http://127.0.0.1:8000/api/articles/' + articleId;
 
@@ -258,9 +309,16 @@
                     });
             }
 
-            // Функция для получения и обновления данных из сервера
-            function updateData(page) {
-                fetch('http://127.0.0.1:8000/api/articles?page=' + page)
+
+            function updateData(page, sort) {
+                let apiUrl = 'http://127.0.0.1:8000/api/articles?page=' + page;
+
+                // Добавляем параметр сортировки, если он задан
+                if (sort) {
+                    apiUrl += '&sort=' + sort;
+                }
+
+                fetch(apiUrl)
                     .then(function (response) {
                         return response.json();
                     })
@@ -282,7 +340,41 @@
                     });
             }
 
-            function updateOrder(page) {
+
+            document.getElementById("sortableTable").addEventListener("click", function (event) {
+                if (event.target.tagName === "TH") {
+                    const columnName = event.target.dataset.column; // Получаем имя столбца из атрибута data-column
+                    const currentDirections = (event.target.dataset.directions || "asc").split(":");
+                    const currentColumn = currentDirections[0];
+                    const currentDirection = currentDirections[1];
+
+                    // Определяем новое направление сортировки
+                    const newDirection = currentColumn === columnName ? (currentDirection === "asc" ? "desc" : "asc") : "asc";
+
+                    // Генерируем строку для параметра сортировки
+                    const sortParam = `${columnName}:${newDirection}`;
+
+                    // Устанавливаем атрибут data-directions для текущего заголовка
+                    event.target.dataset.directions = sortParam;
+
+                    // Вызываем функцию обновления данных с новыми параметрами сортировки
+                    const page = currentPage; // Здесь вы можете получить текущую страницу
+                    updateData(page, sortParam);
+                }
+            });
+
+            document.getElementById("resetSortButton").addEventListener("click", function () {
+                const emptySortParam = "";
+                const page = currentPage;
+                updateData(page, emptySortParam);
+                // Также сбрасываем атрибут data-directions у заголовков столбцов
+                const tableHeaders = document.querySelectorAll("#sortableTable th[data-column]");
+                tableHeaders.forEach(header => {
+                    header.dataset.directions = "";
+                });
+            });
+
+                function updateOrder(page) {
                 const tbody = document.getElementById("dataTableBody");
                 const rows = tbody.getElementsByTagName("tr");
 
