@@ -1,6 +1,7 @@
 {
     "/js/app.js": "/js/app.js",
     "/css/app.css": "/css/app.css",
+    "/images/for.addFolder": "/images/for.addFolder",
     "/node_modules/tinymce/icons/default/icons.js": "/node_modules/tinymce/icons/default/icons.js",
     "/node_modules/tinymce/icons/default/icons.min.js": "/node_modules/tinymce/icons/default/icons.min.js",
     "/node_modules/tinymce/icons/default/index.js": "/node_modules/tinymce/icons/default/index.js",
