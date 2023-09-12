@@ -1,7 +1,6 @@
 @extends('admin.homeAdmin')
 
 @section('content')
-
     <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#addModal">Добавить категорию</button>
 
 <table id="sortableTable" class="table table-bordered">
